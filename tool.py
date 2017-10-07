@@ -194,12 +194,11 @@ def thumb(args):
                 element.text = None
             element.tail = None
         for actor in tree.findall("actor"):  # type: Element
-            thumb_element = actor.find("thumb")  # type: Element
             name_element = actor.find("name")  # type: Element
-            if thumb_element is None:
-                thumb_element = SubElement(actor, "thumb")
             if name_element.text in casts:
-                pass
+                thumb_element = actor.find("thumb")  # type: Element
+                if thumb_element is None:
+                    thumb_element = SubElement(actor, "thumb")
                 thumb_element.text = casts[name_element.text]
             else:
                 undefined.add(name_element.text)
@@ -227,11 +226,11 @@ def _create_cast_subparser(subparsers):
 
 def cast(args):
     casts = {}
-    for file in find_files(args.input, ["*.png", "*.jpg"], recursive=False):
+    for file in find_files(args.input, ["*.png", "*.jpg", "*.jpeg", "*.gif"], recursive=False):
         fullname = basename(file)
         name = splitext(fullname)[0]
         casts[name] = args.prefix + fullname
-    json_str = json.dumps(casts, indent=4, sort_keys=True)
+    json_str = json.dumps(casts, indent=4, sort_keys=True, ensure_ascii=False)
     with open(args.output, encoding="utf-8", mode="w") as file:
         file.write(json_str)
 

@@ -8,7 +8,8 @@ from xml import etree
 # noinspection PyProtectedMember
 from xml.etree.ElementTree import Element, SubElement, ElementTree, Comment, ProcessingInstruction, _escape_cdata, \
     _escape_attrib, QName
-
+import re
+from unicodedata import normalize
 
 class _HelpFormatter(HelpFormatter):
     def _format_action_invocation(self, action):
@@ -46,12 +47,13 @@ def any_match(name, patterns):
 
 
 def _create_parsers():
-    parser = ArgumentParser(prog="Avalon Xml Tools", description="Version 1.0.0", formatter_class=_HelpFormatter)
+    parser = ArgumentParser(prog="Avalon Xml Tools", description="Version 1.0.2", formatter_class=_HelpFormatter)
     subparsers = parser.add_subparsers(dest="command")
 
     subparsers_factories = [_create_create_subparser,
                             _create_thumb_subparser,
-                            _create_cast_subparser]
+                            _create_cast_subparser,
+                            _create_normalize_subparser]
     funcs = {}
     for factory in subparsers_factories:
         command, func = factory(subparsers)
@@ -226,16 +228,47 @@ def _create_cast_subparser(subparsers):
 
 def cast(args):
     casts = {}
+    versions = {}
     for file in find_files(args.input, ["*.png", "*.jpg", "*.jpeg", "*.gif"], recursive=False):
         fullname = basename(file)
         name = splitext(fullname)[0]
-        casts[name] = args.prefix + fullname
+        result = re.search("(.*)\.(\d*)", name, re.IGNORECASE)
+        if result:
+            name = result.group(1)
+            version = int(result.group(2))
+        else:
+            version = 0
+        if name not in casts or versions[name] < version:
+            casts[name] = args.prefix + fullname
+            versions[name] = version
     json_str = json.dumps(casts, indent=4, sort_keys=True, ensure_ascii=False)
     with open(args.output, encoding="utf-8", mode="w") as file:
         file.write(json_str)
 
 
 # ============================   Cast End   ============================
+
+# ==========================  Normalize Start ===========================
+
+
+def _create_normalize_subparser(subparsers):
+    command = "normalize"
+    parser = subparsers.add_parser(command, help="Normalize string in xml file.")
+    parser.add_argument("file", type=_valid_file)
+
+    return command, normal
+
+
+def normal(args):
+    with open(args.file, mode="r+", encoding="utf-8") as file:
+        content = normalize('NFKC', file.read())
+        file.seek(0)
+        file.write(content)
+        file.truncate()
+
+
+
+# ==========================   Normalize End  ==========================
 
 def main():
     parser, funcs = _create_parsers()

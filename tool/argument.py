@@ -13,16 +13,16 @@ class Argument(Generic[T]):
                  allow_default_none: bool = False, nargs: Optional[str] = None):
         if " " in name:
             raise ValueError("Name cannot contain space.")
-        self.name = name  # type:str
-        self._type = type  # type:Callable[[str], T]
-        self._abbr = abbr  # type:Optional[str]
-        self._default = default  # type:Optional[T]
-        self._meta = meta  # type:Optional[str]
-        self._help = help  # type:Optional[str]
-        self._allow_default_none = allow_default_none  # type:bool
+        self.name = name  # type: str
+        self._type = type  # type: Callable[[str], T]
+        self._abbr = abbr  # type: Optional[str]
+        self._default = default  # type: Optional[T]
+        self._meta = meta  # type: Optional[str]
+        self._help = help  # type: Optional[str]
+        self._allow_default_none = allow_default_none  # type: bool
         if nargs is None and isinstance(default, list):
             nargs = "+"
-        self._nargs = nargs  # type:Optional[str]
+        self._nargs = nargs  # type: Optional[str]
 
     def add_argument(self, parser: ArgumentParser):
         if self._abbr is None:
@@ -54,10 +54,13 @@ class Argument(Generic[T]):
 
     def ask_input(self) -> Optional[Union[T, List[T]]]:
         has_default = self._default is not None or self._allow_default_none
-        default_str = f"(default: {self._default})" if has_default else ""
+        default_value = self._default
+        if isinstance(self._default, str):
+            default_value = f"\"{default_value}\""
+        default_str = f"(default: {default_value})" if has_default else ""
         while True:
             try:
-                user_input = input(f"Enter {self._meta}{default_str}")
+                user_input = input(f"Enter {self._meta}{default_str}: ")
                 if not user_input and has_default:
                     return self._default
                 if self._nargs is not None:

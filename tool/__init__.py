@@ -1,4 +1,3 @@
-from argparse import ArgumentTypeError
 from datetime import datetime
 from fnmatch import fnmatch
 from os import walk, listdir
@@ -15,19 +14,19 @@ def valid_date(date_str: str) -> datetime:
         return datetime.strptime(date_str, "%Y-%m-%d")
     except ValueError:
         msg = "Not a valid date: {0}".format(date_str)
-        raise ArgumentTypeError(msg)
+        raise ValueError(msg)
 
 
 def valid_dir(path_str: str) -> str:
     if path_str == "" or isdir(path_str):
         return path_str
-    raise TypeError("{0} is not a directory".format(path_str))
+    raise ValueError("{0} is not a directory".format(path_str))
 
 
 def valid_file(path_str: str) -> str:
     if isfile(path_str):
         return path_str
-    raise TypeError("{0} is not a file".format(path_str))
+    raise ValueError("{0} is not a file".format(path_str))
 
 
 def find_files(directory, pattern, day_diff=None, recursive=True):

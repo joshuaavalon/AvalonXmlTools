@@ -3,7 +3,7 @@ from unicodedata import normalize
 from tool import valid_file, replace_words, invert_dict
 from tool.argument import Argument
 
-_argument = Argument("file", type=valid_file)
+_argument = Argument("file", type=valid_file, meta="<file>")
 
 
 def create_subparser(subparsers):

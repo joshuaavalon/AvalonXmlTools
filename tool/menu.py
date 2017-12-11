@@ -30,7 +30,7 @@ class Menu:
 
     def show(self) -> int:
         items = self._items
-        keys = list(items.keys())  # type:List[int]
+        keys = list(items.keys())  # type: List[int]
         keys.sort()
         user_input = None  # type: Optional[int]
         error = False  # type: bool

@@ -1,7 +1,7 @@
 from argparse import ArgumentParser, HelpFormatter
 from functools import partial
 
-from tool import create, thumb, cast, normalize, menu
+from tool import create, thumb, cast, normalize, menu, youtube
 
 
 class _HelpFormatter(HelpFormatter):
@@ -20,12 +20,12 @@ def _create_parsers():
     subparsers_factories = [create.create_subparser,
                             thumb.create_subparser,
                             cast.create_subparser,
-                            normalize.create_subparser]
+                            normalize.create_subparser,
+                            youtube.create_subparser]
     funcs = {}
     for factory in subparsers_factories:
         command, func = factory(subparsers)
         funcs[command] = func
-
     return parser, funcs
 
 

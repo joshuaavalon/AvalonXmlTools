@@ -41,7 +41,6 @@ def create_subparser(subparsers):
     command = "create"
     parser = subparsers.add_parser(command, help="Generate xml file(s).")
     add_arguments(parser, _arguments)
-    XmlSerializer()
     return command, _create
 
 

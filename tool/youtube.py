@@ -18,7 +18,9 @@ _arguments = [
     Argument("season", abbr="s", type=int, default=1, meta="<season number>",
              help="Season number of the xml(s) (default: %(default)s)"),
     Argument("mpaa", abbr="m", type=str, default=None, allow_default_none=True, meta="<mpaa>",
-             help="Common mpaa of all the generate xml(s)")
+             help="Common mpaa of all the generate xml(s)"),
+    Argument("list", abbr="t", type=bool, default=False, meta="<list>",
+             help="Is youtube playlist")
 ]
 
 
@@ -82,7 +84,10 @@ def _download_youtube_playlist(args):
         makedirs(args.output)
     except OSError:
         pass
-    url = f"https://www.youtube.com/playlist?list={args.yid}"
+    if args.list:
+        url = f"https://www.youtube.com/playlist?list={args.yid}"
+    else:
+        url = f"https://www.youtube.com/watch?v={args.yid}"
     _download_youtube(url)
     for file in listdir("."):
         if isfile(file) and file.endswith(".info.json"):
@@ -90,7 +95,7 @@ def _download_youtube_playlist(args):
                 info = json.loads(json_file.read())
             if info is not None:
                 vid = info["id"]
-                episode_index = info["playlist_index"]
+                episode_index = info["playlist_index"] if info["playlist_index"] is not None else 1
                 aired = datetime.strptime(info["upload_date"], "%Y%m%d")
                 file_name = f"{args.prefix} - s{str(args.season).zfill(2)}e{str(episode_index).zfill(2)}"
                 episode = Episode(name=args.prefix,

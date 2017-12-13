@@ -39,12 +39,15 @@ class Argument(Generic[T]):
         parser.add_argument(f"-{self._abbr}", f"--{self.name}", **kwargs)
 
     def _create_arguments(self) -> dict:
-        kwargs = {"type": self._type}
-        self._add_to_dict(kwargs, "type", self._type)
-        self._add_to_dict(kwargs, "default", self._default)
-        self._add_to_dict(kwargs, "metavar", self._meta)
-        self._add_to_dict(kwargs, "help", self._help)
-        self._add_to_dict(kwargs, "nargs", self._nargs)
+        kwargs = {}
+        if self._type != bool:
+            self._add_to_dict(kwargs, "type", self._type)
+            self._add_to_dict(kwargs, "default", self._default)
+            self._add_to_dict(kwargs, "metavar", self._meta)
+            self._add_to_dict(kwargs, "help", self._help)
+            self._add_to_dict(kwargs, "nargs", self._nargs)
+        else:
+            self._add_to_dict(kwargs, "action", 'store_false' if self._default else 'store_true')
         return kwargs
 
     def _add_to_dict(self, dict: dict, key: str, value: Optional[Any]):

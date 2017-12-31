@@ -32,7 +32,8 @@ def normal(source: str) -> str:
 
 
 _before = {
-    "～": "$wave%"
+    "～": "$wave%",
+    "＆": "&amp;"
 }
 
 _after = {

@@ -55,7 +55,7 @@ class XmlSerializer:
         root = Element("episodedetails")
         self._insert_sub_element(root, "title", episode.title)
         self._insert_sub_element(root, "episode", episode.episode)
-        self._insert_sub_element(root, "aired", episode.aired)
+        self._insert_sub_element(root, "aired", episode.aired.date() if episode.aired is not None else None)
         self._insert_sub_element(root, "mpaa", episode.mpaa)
         self._insert_sub_element(root, "plot", episode.plot)
         self._insert_list_sub_element(root, "director", episode.directors)
